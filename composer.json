@@ -1,5 +1,5 @@
 {
-  "name": "tiny-framework",
+  "name": "tinyfw/tinyfw",
   "require": {
     "php": ">=5.3"
   },
