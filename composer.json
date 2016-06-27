@@ -1,9 +1,17 @@
 {
-  "name": "tinyfw/tinyfw",
-  "autoload": {
-    "psr-4": {
-      "TinyFw\\": "src/"
+    "name": "tinyfw/tinyfw",
+    "type": "library",
+    "description": "Small php framework.",
+    "keywords": ["Small", "php framework"],    
+    "license": "MIT",
+    "version": "1.0.0",
+    "require": {
+      "php": ">=5.3"
     },
+    "autoload": {
+      "psr-4": {
+        "TinyFw\\": "src/"
+      },
     "files": ["src/functions_include.php"]
   }
 }
