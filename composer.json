@@ -1,0 +1,12 @@
+{
+  "name": "tiny-framework",
+  "require": {
+    "php": ">=5.3"
+  },
+  "autoload": {
+    "psr-4": {
+      "TinyFw\\": "src/"
+    },
+    "files": ["src/functions_include.php"]
+  }
+}
