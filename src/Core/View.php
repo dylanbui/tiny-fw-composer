@@ -10,16 +10,16 @@ namespace TinyFw\Core;
 class View
 {	
 	public $_disableLayout = false;	
-	public $_default_layout_path = "default";
+	public $_defaultLayoutPath = "default";
 	
 	/**
 	 *
 	 * The constructor, duh
 	 * @var string
 	 */
-	public function __construct($default_layout_sub_path = "default")
+	public function __construct($defaultLayoutSubPath = "default")
 	{
-		$this->_default_layout_path = $default_layout_sub_path;
+		$this->_defaultLayoutPath = $defaultLayoutSubPath;
 	}
 
 	/**
@@ -37,7 +37,7 @@ class View
 	 * @access private
 	 * @var string
 	 */
-	private $template_dir = null;
+	private $templateDir = null;
 	
 	/**
 	 * The directory where the templates are stored
@@ -45,7 +45,7 @@ class View
 	 * @access private
 	 * @var string
 	 */
-	private $layout_dir = null;
+	private $layoutDir = null;
 
     /**
      * The content html after render layout
@@ -53,7 +53,7 @@ class View
      * @access private
      * @var string
      */
-    private $content_html = null;
+    private $contentHtml = null;
 
     /**
 	 * Adds a variable that can be used by the templates.
@@ -68,7 +68,20 @@ class View
 	{
 		$this->variables[$name] = $value;
 	}
-	
+
+	/**
+	 * Set variables for view
+	 * added variables.
+	 * @param array $args
+	 * @access public
+	 * @return void
+	 */
+	public function setVars($args = array())
+	{
+		if(!empty($args))
+			$this->variables = array_merge($this->variables,$args);
+	}
+
 	/**
 	 * Returns a numeral array containing the names of all
 	 * added variables.
@@ -84,23 +97,23 @@ class View
     /**
      * Set template dir
      * @access public
-     * @param string $template_dir
+     * @param string $templateDir
      * @return none
      */
-    public function setTemplateDir($template_dir)
+    public function setTemplateDir($templateDir)
     {
-        $this->template_dir = $template_dir;
+        $this->templateDir = $templateDir;
     }
 
     /**
      * Set layout dir
      * @access public
-     * @param string $layout_dir
+     * @param string $layoutDir
      * @return none
      */
-    public function setLayoutDir($layout_dir)
+    public function setLayoutDir($layoutDir)
     {
-        $this->layout_dir = $layout_dir;
+        $this->layoutDir = $layoutDir;
     }
 
     /**
@@ -110,7 +123,7 @@ class View
      */
     public function getLayoutDir()
     {
-        return $this->layout_dir;
+        return $this->layoutDir;
     }
 
     /**
@@ -120,19 +133,19 @@ class View
      */
     public function getLayoutPath()
     {
-        return $this->_default_layout_path;
+        return $this->_defaultLayoutPath;
 
     }
 
     /**
      * Set layout path
      * @access public
-     * @param string $layout_path
+     * @param string $layoutPath
      * @return none
      */
-    public function setLayoutPath($layout_path)
+    public function setLayoutPath($layoutPath)
     {
-        $this->_default_layout_path = $layout_path;
+        $this->_defaultLayoutPath = $layoutPath;
     }
 
     /**
@@ -153,7 +166,7 @@ class View
      */
     public function getContent()
     {
-        return $this->content_html;
+        return $this->contentHtml;
     }
 
     /**
@@ -164,7 +177,7 @@ class View
      */
     public function setContent($content)
     {
-        $this->content_html = $content;
+        $this->contentHtml = $content;
     }
 
     /**
@@ -192,7 +205,7 @@ class View
 	
 	public function fetch($path,$args = array()) 
 	{
-		$path = $this->template_dir . '/' . $path . '.phtml';
+		$path = $this->templateDir . '/' . $path . '.phtml';
 			
 		if (file_exists($path) == false)
 		{
@@ -213,22 +226,22 @@ class View
 
         if($this->_disableLayout == true)
         {
-            $this->content_html = $this->variables['main_content'];
-            return $this->content_html;
+            $this->contentHtml = $this->variables['main_content'];
+            return $this->contentHtml;
         }
 
 		if(is_null($layout_path))
-            $layout_path = $this->layout_dir."/{$this->_default_layout_path}.phtml";
+            $layout_path = $this->layoutDir."/{$this->_defaultLayoutPath}.phtml";
 		else
-            $layout_path = $this->layout_dir.'/'.$layout_path.'.phtml';
+            $layout_path = $this->layoutDir.'/'.$layout_path.'.phtml';
 			
 		if (file_exists($layout_path) == false)
 		{
 			throw new \Exception('Layout not found in '.$layout_path);
 		}
 
-        $this->content_html = $this->getOutput($layout_path,$this->variables);
-		return isset($this->content_html) ? $this->content_html : false;
+        $this->contentHtml = $this->getOutput($layout_path,$this->variables);
+		return isset($this->contentHtml) ? $this->contentHtml : false;
     }
 
 	/**
@@ -241,9 +254,6 @@ class View
 	 */
 	private function getOutput($template_file,$args = array())
 	{
-		// -- Khong can khi dang o trong view => $this la chinh no --
-		// $args['_view'] = $this;
-		
 		if (file_exists($template_file))
 		{
             /*** extract all the variables ***/

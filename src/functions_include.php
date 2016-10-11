@@ -27,7 +27,8 @@ if (!function_exists('redirect')) {
 if (!function_exists('current_site_url')) {
     function current_site_url($uri = '')
     {
-        $pageURL = 'http';
+//        $pageURL = 'http';
+        $pageURL = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 'http');
         $pageURL .= "://";
         if ($_SERVER["SERVER_PORT"] != "80") {
             $pageURL .= $_SERVER["SERVER_NAME"] . ":" . $_SERVER["SERVER_PORT"];

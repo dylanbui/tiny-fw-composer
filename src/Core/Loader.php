@@ -225,5 +225,3 @@ class Loader
         return true;
     }
 }
-
-//return Loader::getInstance();

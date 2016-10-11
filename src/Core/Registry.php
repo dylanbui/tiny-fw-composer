@@ -5,6 +5,48 @@ namespace TinyFw\Core;
 class Registry {
 
     /*
+     * @var object $instance
+    */
+    private static $instance = null;
+
+    /**
+     *
+     * Return Registry instance or create intitial instance
+     *
+     * @access public
+     *
+     * @return object
+     *
+     */
+    public static function getInstance()
+    {
+        if(is_null(self::$instance))
+        {
+            self::$instance = new self(); //Registry();
+        }
+        return self::$instance;
+    }
+
+    /**
+     *
+     * @the constructor is set to private so
+     * @so nobody can create a new instance using new
+     *
+     */
+    private function __construct()
+    {
+    }
+
+    /**
+     *
+     * @__clone
+     *
+     * @access private
+     *
+     */
+    private function __clone() {}
+
+    /*
     * @the vars array
     * @access private
     */
@@ -23,7 +65,7 @@ class Registry {
      */
     public function __set($index, $value)
     {
-        $this->vars[$index] = $value;
+        self::$instance->vars[$index] = $value;
     }
 
     /**
@@ -37,12 +79,12 @@ class Registry {
      */
     public function __get($index)
     {
-        return (isset($this->vars[$index]) ? $this->vars[$index] : NULL);
+        return (isset(self::$instance->vars[$index]) ? self::$instance->vars[$index] : NULL);
     }
 
     public function has($index)
     {
-        return isset($this->vars[$index]);
+        return isset(self::$instance->vars[$index]);
     }
 }
 

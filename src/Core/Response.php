@@ -5,7 +5,7 @@ namespace TinyFw\Core;
 final class Response 
 {
 	private $headers = array(); 
-	private $output;
+	private $output = null;
 	private $level = 0;
 
     public function __construct()
@@ -24,69 +24,42 @@ final class Response
 		exit;
 	}
 
-	public function setOutput($output, $level = 0) 
-	{
-		$this->output = $output;
-		$this->level = $level;
-	}
+    public function getLevel()
+    {
+        return $this->level;
+    }
 
-	private function compress($data, $level = 0) 
-	{
-		if (isset($_SERVER['HTTP_ACCEPT_ENCODING']) && (strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') !== FALSE)) {
-			$encoding = 'gzip';
-		} 
+    public function setLevel($level)
+    {
+        $this->level = $level;
+    }
 
-		if (isset($_SERVER['HTTP_ACCEPT_ENCODING']) && (strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'x-gzip') !== FALSE)) {
-			$encoding = 'x-gzip';
-		}
+    public function getOutput()
+    {
+        return $this->output;
+    }
 
-		if (!isset($encoding)) {
-			return $data;
-		}
-
-		if (!extension_loaded('zlib') || ini_get('zlib.output_compression')) {
-			return $data;
-		}
-
-		if (headers_sent()) {
-			return $data;
-		}
-
-		if (connection_status()) { 
-			return $data;
-		}
-		
-		$this->addHeader('Content-Encoding: ' . $encoding);
-
-		return gzencode($data, (int)$level);
-	}
-
-	public function output() 
-	{
-		if ($this->level) {
-			$ouput = $this->compress($this->output, $this->level);
-		} else {
-			$ouput = $this->output;
-		}	
-			
-		if (!headers_sent()) {
-			foreach ($this->headers as $header) {
-				header($header, TRUE);
-			}
-		}
-		
-		echo $ouput;
-	}
+    public function setOutput($output, $level = 0)
+    {
+        $this->output = $output;
+        $this->level = $level;
+    }
 
     public function setOutputJson($output, $level = 0)
     {
-        // -- Encode to Json --
-        $output = json_encode($output);
-
-        if ($level)
-            $output = $this->compress($output, $level);
-
         $this->addHeader("Content-Type: application/json;charset=utf-8");
+        // -- Encode to Json --
+        $this->output = json_encode($output);
+        $this->level = $level;
+    }
+
+    public function output()
+    {
+        if ($this->level) {
+            $content = $this->compress($this->output, $this->level);
+        } else {
+            $content = $this->output;
+        }
 
         if (!headers_sent()) {
             foreach ($this->headers as $header) {
@@ -94,8 +67,39 @@ final class Response
             }
         }
 
-        echo $output;
-        exit();
+        echo $content;
     }
+
+    private function compress($data, $level = 0)
+    {
+        if (isset($_SERVER['HTTP_ACCEPT_ENCODING']) && (strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') !== FALSE)) {
+            $encoding = 'gzip';
+        }
+
+        if (isset($_SERVER['HTTP_ACCEPT_ENCODING']) && (strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'x-gzip') !== FALSE)) {
+            $encoding = 'x-gzip';
+        }
+
+        if (!isset($encoding)) {
+            return $data;
+        }
+
+        if (!extension_loaded('zlib') || ini_get('zlib.output_compression')) {
+            return $data;
+        }
+
+        if (headers_sent()) {
+            return $data;
+        }
+
+        if (connection_status()) {
+            return $data;
+        }
+
+        $this->addHeader('Content-Encoding: ' . $encoding);
+
+        return gzencode($data, (int)$level);
+    }
+
+
 }
-?>

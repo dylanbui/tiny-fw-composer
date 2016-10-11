@@ -2,7 +2,7 @@
 
 namespace TinyFw;
 
-use TinyFw\Core\Config;
+use TinyFw\Support\Config as ConfigSupport;
 
 class Logger
 {
@@ -29,8 +29,8 @@ class Logger
         // args[1] contains the log level
         // args[2] constains the filename
         // args[3] constains the line number
-        $config = Config::getInstance();
-        if( $args[1] >= $config->config_values['logging']['log_level'] )
+        $config = ConfigSupport::get('logging');
+        if( $args[1] >= $config['log_level'] )
         {
             $line = array(
                 'log_function'	=> $function,
@@ -39,7 +39,7 @@ class Logger
                 'log_file'	=> $args[2],
                 'log_line'	=> $args[3]);
 
-            switch($config->config_values['logging']['log_handler'])
+            switch($config['log_handler'])
             {
                 case 'file':
                     // set the log date/time
@@ -47,7 +47,7 @@ class Logger
                     // encode the line
                     $message = self::convertMesg($line);
 
-                    $log_file = site_path(rtrim($config->config_values['logging']['log_dir'], '/'));
+                    $log_file = site_path(rtrim($config['log_dir'], '/'));
                     $log_file .= '/log-'.date('Y-m-d').'.log';
 
                     if ($handle = fopen($log_file, "a+"))

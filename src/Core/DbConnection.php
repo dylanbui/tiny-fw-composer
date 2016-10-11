@@ -12,6 +12,8 @@
 
 namespace TinyFw\Core;
 
+use TinyFw\Support\Config as ConfigSupport;
+
 class DbConnection
 {
 
@@ -40,15 +42,24 @@ class DbConnection
     {
         if (!isset(self::$instances[$config_name]))
         {
-            $config = Config::getInstance();
-            $hostname = $config->config_values[$config_name]['db_hostname'];
-            $db_name = $config->config_values[$config_name]['db_name'];
-            $db_password = $config->config_values[$config_name]['db_password'];
-            $db_username = $config->config_values[$config_name]['db_username'];
-            $db_port = $config->config_values[$config_name]['db_port'];
+//            $config = Config::getInstance();
+//            $hostname = $config->config_values[$config_name]['db_hostname'];
+//            $db_name = $config->config_values[$config_name]['db_name'];
+//            $db_password = $config->config_values[$config_name]['db_password'];
+//            $db_username = $config->config_values[$config_name]['db_username'];
+//            $db_port = $config->config_values[$config_name]['db_port'];
+
+            $configDb = ConfigSupport::get($config_name);
+            $db_driver = $configDb['db_driver'];
+            $db_hostname = $configDb['db_hostname'];
+            $db_name = $configDb['db_name'];
+            $db_password = $configDb['db_password'];
+            $db_username = $configDb['db_username'];
+            $db_port = $configDb['db_port'];
 
             try {
-                self::$instances[$config_name] = new Pdo($hostname, $db_port, $db_username, $db_password, $db_name);
+                self::$instances[$config_name] = new Pdo($db_driver, $db_hostname, $db_port, $db_username, $db_password, $db_name);
+
             } catch (\Exception $ex)
             {
                 echo 'Create Db - ERROR: ' . $ex->getMessage();
@@ -72,16 +83,20 @@ class DbConnection
 // -- Tach ra de co the de dang thay the Driver Connection Database neu can thiet --
 // --  --
 
-class Pdo
+class Pdo extends \PDO
 {
-    // Database connection object
-    private $pdo, $stmt;
+    // Database statement object
+    private $stmt;
 
     // Create a PDO object and connect to the database
-    public function __construct($hostname, $port, $username, $password, $database)
+    public function __construct($db_driver, $hostname, $port, $username, $password, $database)
     {
         try {
-            $this->pdo = new \PDO("mysql:host=$hostname;port=$port;dbname=$database", $username, $password);
+
+            if ($db_driver == 'sqlite')
+                parent::__construct("$db_driver:$hostname");
+            else
+                parent::__construct("$db_driver:host=$hostname;port=$port;dbname=$database", $username, $password);
 //            // Set some options
 //            // Return rows found, not changed, during inserts/updates
 //            PDO::MYSQL_ATTR_FOUND_ROWS => true,
@@ -91,8 +106,8 @@ class Pdo
 //            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
 //            // Return associative arrays, good for JSON encoding
 //            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
-            $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-            $this->pdo->query("SET NAMES 'UTF8'");
+            $this->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+            $this->query("SET NAMES 'UTF8'");
         } catch(\PDOException $e) {
             echo 'PDOException: ' . $e->getMessage();
             exit();
@@ -101,20 +116,14 @@ class Pdo
 
     public function __destruct()
     {
-        // -- Close Pdo connection --
-        $this->close();
-    }
-
-    public function pdo()
-    {
-        return $this->pdo;
+        $this->stmt = null;
     }
 
     public function selectOneRow($sql, $data = array())
     {
         try {
             // Prepare the SQL statement
-            $this->stmt = $this->pdo->prepare($sql);
+            $this->stmt = $this->prepare($sql);
             // Execute the statement
             if ($this->stmt->execute($data)) {
                 // Return the selected data as an assoc array
@@ -136,7 +145,7 @@ class Pdo
     {
         try {
             // Prepare the SQL statement
-            $this->stmt = $this->pdo->prepare($sql);
+            $this->stmt = $this->prepare($sql);
             // Execute the statement
             if ($this->stmt->execute($data)) {
                 // -- Only run when SELECT query --
@@ -159,7 +168,7 @@ class Pdo
     public function exec($sql, $data = array()) {
         try {
             // Prepare the SQL statement
-            $this->stmt = $this->pdo->prepare($sql);
+            $this->stmt = $this->prepare($sql);
             // Execute the statement
             if ($this->stmt->execute($data)) {
                 // Return the number of rows affected
@@ -195,17 +204,17 @@ class Pdo
 
     public function errno()
     {
-        return $this->pdo->errorCode();
+        return $this->errorCode();
     }
 
     public function error()
     {
-        return $this->pdo->errorCode();
+        return $this->errorCode();
     }
 
     public function escape($value)
     {
-        return $this->pdo->quote($value);
+        return $this->quote($value);
     }
 
     public function countAffected()
@@ -215,15 +224,15 @@ class Pdo
 
     public function getLastId()
     {
-        return $this->pdo->lastInsertId();
+        return $this->lastInsertId();
     }
 
-    public function close()
-    {
-        $this->pdo = null;
-        $this->stmt = null;
-        return true;
-    }
+//    public function close()
+//    {
+//        $this->pdo = null;
+//        $this->stmt = null;
+//        return true;
+//    }
 
     /**
      * This method is needed for prepared statements. They require
