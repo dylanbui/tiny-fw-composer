@@ -62,7 +62,46 @@ final class Text {
         return rtrim($matches[0]).$end_char;
     }
 
+    //// underscored to upper-camelcase
+    //// e.g. "this_method_name" -> "ThisMethodName"
+    public static function upperCamelcase($string)
+    {
+        // -- User for php 5.6 -> 7 --
+        return preg_replace_callback(
+            '/(?:^|-)(.?)/',
+            function($match) { return strtoupper($match[1]); },
+            $string
+        );
+    }
 
+    //// underscored to lower-camelcase
+    //// e.g. "this_method_name" -> "thisMethodName"
+    public static function lowerCamelcase($string)
+    {
+        // -- User for php 5.6 -> 7 --
+        return preg_replace_callback(
+            '/-(.?)/',
+            function($match) { return strtoupper($match[1]); },
+            $string
+        );
+    }
+
+    // camelcase (lower or upper) to hyphen
+    // e.g. "thisMethodName" -> "this_method_name"
+    // e.g. "ThisMethodName" -> "this_method_name"
+    // Of course these aren't 100% symmetric.  For example...
+    //  * this_is_a_string -> ThisIsAString -> this_is_astring
+    //  * GetURLForString -> get_urlfor_string -> GetUrlforString
+    public static function camelcaseToHyphen($string)
+    {
+        // -- User for php 5.6 -> 7 --
+        return preg_replace_callback(
+            '/([^A-Z])([A-Z])/',
+            function($match) { return $match[1].'-'.$match[2]; },
+            $string
+        );
+
+    }
 
 }
 

@@ -43,6 +43,13 @@ final class Response
     {
         $this->output = $output;
         $this->level = $level;
+        return $this;
+    }
+
+    // -- Only one cookie header in response --
+    public function withCookie(Cookie $cookie)
+    {
+        $this->addHeader("Set-Cookie: ".$cookie);
     }
 
     public function setOutputJson($output, $level = 0)
@@ -51,6 +58,7 @@ final class Response
         // -- Encode to Json --
         $this->output = json_encode($output);
         $this->level = $level;
+        return $this;
     }
 
     public function output()

@@ -1,3 +1,3 @@
 # tiny-fw-composer
-
-Version 2.0.1
+Support php 7.1
+Version 2.0.2

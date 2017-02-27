@@ -1,10 +1,10 @@
 {
     "name": "tinyfw/tinyfw",
     "type": "library",
-    "description": "Small php framework.",
+    "description": "Small php framework. Support php 7.1",
     "keywords": ["Small", "php framework"],    
     "license": "MIT",
-    "version": "2.0.1",
+    "version": "2.0.2",
     "require": {
       "php": ">=5.3"
     },

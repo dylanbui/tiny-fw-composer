@@ -17,6 +17,9 @@ class Request
 
 	public function __construct($route  = 'index/index', $args = array(), $namespace = NULL)
 	{
+	    if (empty($args))
+            $args = array();
+
 	    // -- Parse router to controller, action --
 		$this->parseUri($route);
 
@@ -90,6 +93,20 @@ class Request
 
     private function parseUri($route)
     {
+        // This section ensures that even on servers that require the URI to be in the query string (Nginx) a correct
+        // URI is found, and also fixes the QUERY_STRING server var and $_GET array.
+        if (strncmp($route, '?/', 2) === 0)
+        {
+            $route = substr($route, 2);
+        }
+        $parts = preg_split('#\?#i', $route, 2);
+        $route = $parts[0];
+        if (isset($parts[1]))
+        {
+            $_SERVER['QUERY_STRING'] .= '&'.$parts[1];
+            parse_str($_SERVER['QUERY_STRING'], $_GET);
+        }
+
         // removes the trailing slash
 // 		/this/that/theother/ => this/that/theother
         $route = trim($route, '/');

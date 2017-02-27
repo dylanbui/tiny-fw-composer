@@ -83,16 +83,29 @@ class View
 	}
 
 	/**
-	 * Returns a numeral array containing the names of all
-	 * added variables.
+	 * Returns a value of variable in View
 	 * @access public
-	 * @return array
+	 * @return string | object
 	 */
-	public function getVars()
+	public function getVars($name)
 	{
-		 $variables = array_keys($this->variables);
-		 return !empty($variables) ? $variables : false;
+        if (isset($this->variables[$name]))
+            return $this->variables[$name];
+        return null;
 	}
+
+    /**
+     * Returns a numeral array containing the names of all
+     * added variables.
+     * @access public
+     * @return array
+     */
+    public function getAllNamingVars()
+    {
+        $variables = array_keys($this->variables);
+        return !empty($variables) ? $variables : false;
+    }
+
 
     /**
      * Set template dir
@@ -220,8 +233,11 @@ class View
 		return isset($output) ? $output : false;
 	}
 	
-	public function renderLayout($content_path, $layout_path = null)
+	public function renderLayout($content_path, $variables = null, $layout_path = null)
 	{
+	    if (!empty($variables))
+	        $this->setVars($variables);
+
         $this->variables['main_content'] = $this->fetch($content_path);
 
         if($this->_disableLayout == true)

@@ -342,6 +342,112 @@ if (!function_exists('is_php')) {
     }
 }
 
+if (!function_exists('encrypt')) {
+    /**
+     * Encrypt (but does not authenticate) a message
+     *
+     * @param string $message - plaintext message
+     * @param string $secret_key - encryption key
+     * @param string $secret_iv - encryption hash
+     * @param boolean $encode - set to TRUE to return a base64-encoded
+     * @return string (raw binary)
+     */
+    function encrypt($message, $secret_key, $secret_iv = 'none', $encode = false)
+    {
+        $encrypt_method = "AES-256-CBC";
+        // hash
+        $key = hash('sha256', $secret_key);
+
+        // iv - encrypt method AES-256-CBC expects 16 bytes - else you will get a warning
+        $iv = substr(hash('sha256', $secret_iv), 0, 16);
+
+        // -- encrypt --
+        $output = openssl_encrypt($message, $encrypt_method, $key, 0, $iv);
+
+        if ($encode) {
+            return base64_encode($output);
+        }
+
+        return $output;
+    }
+}
+
+if (!function_exists('decrypt')) {
+    /**
+     * Decrypt (but does not verify) a message
+     *
+     * @param string $message - ciphertext message
+     * @param string $secret_key - encryption key
+     * @param string $secret_iv - encryption hash
+     * @param boolean $encode - set to TRUE to return a base64-encoded
+     * @return string (raw binary)
+     * @throws Exception
+     */
+    function decrypt($message, $secret_key, $secret_iv = 'none', $encode = false)
+    {
+        if ($encode) {
+            $message = base64_decode($message, true);
+            if ($message === false) {
+                throw new Exception('Encryption failure');
+            }
+        }
+
+        $encrypt_method = "AES-256-CBC";
+        // hash
+        $key = hash('sha256', $secret_key);
+
+        // iv - encrypt method AES-256-CBC expects 16 bytes - else you will get a warning
+        $iv = substr(hash('sha256', $secret_iv), 0, 16);
+
+        // -- decrypt --
+        $output = openssl_decrypt($message, $encrypt_method, $key, 0, $iv);
+
+        return $output;
+    }
+}
+
+// -- Function deprecated from php 7.1 --
+
+//if (!function_exists('encrypt')) {
+//    // -- Ma hoa 1 chuoi , can thu vien phpXX-mcrypt --
+//    function encrypt($string, $unlocker, $salt = '')
+//    {
+//        try {
+//            $key = hash('SHA256', $salt . $unlocker, true);
+//            srand();
+//            $iv = mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC), MCRYPT_RAND);
+//            if (strlen($iv_base64 = rtrim(base64_encode($iv), '=')) != 22) {
+//                return false;
+//            }
+//            $encrypted = base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_128, $key, $string . md5($string), MCRYPT_MODE_CBC, $iv));
+//            return $iv_base64 . $encrypted;
+//        } catch (Exception $e) {
+//            return false;
+//        }
+//    }
+//}
+//
+//if (!function_exists('decrypt')) {
+//    // -- Giai ma 1 chuoi , can thu vien phpXX-mcrypt --
+//    function decrypt($string, $unlocker, $salt = '')
+//    {
+//        try {
+//            $key = hash('SHA256', $salt . $unlocker, true);
+//            $iv = base64_decode(substr($string, 0, 22) . '==');
+//            $string = substr($string, 22);
+//            $decrypted = rtrim(mcrypt_decrypt(MCRYPT_RIJNDAEL_128, $key, base64_decode($string), MCRYPT_MODE_CBC, $iv), "\0\4");
+//            $hash = substr($decrypted, -32);
+//            $decrypted = substr($decrypted, 0, -32);
+//            if (md5($decrypted) != $hash) {
+//                return false;
+//            }
+//            return $decrypted;
+//        } catch (Exception $e) {
+//            return false;
+//        }
+//    }
+//}
+
 function tinyfw_url()
 {
     if (preg_match('#^(.+)/vendor/(.+)$#', __FILE__, $matches)) {

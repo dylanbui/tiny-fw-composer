@@ -137,11 +137,13 @@ class ExceptionHandler
     public static function handle(Error $error)
     {
         $errorDir = realpath(dirname(__FILE__)).'/template_errors';
+
+        if(!is_null(self::$templateErrorDir))
+            $errorDir = self::$templateErrorDir;
+
         $view_file = $errorDir.'/error_php.phtml';
         if($error->isException())
         {
-            if(!is_null(self::$templateErrorDir))
-                $errorDir = self::$templateErrorDir;
 
             if(APPLICATION_ENV == 'production' ||
                 APPLICATION_ENV == 'staging' || $error->type() == 404)
