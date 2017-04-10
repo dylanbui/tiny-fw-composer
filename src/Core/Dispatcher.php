@@ -87,19 +87,10 @@ class Dispatcher
         $this->segments['_url'] = '/'.str_replace(array('//', '../'), '/', trim($uri, '/'));
         $this->segments['_namespace'] = $this->_controllerNamespace;
 
-//        echo "<pre>";
-//        print_r($this->_routes);
-//        echo "</pre>";
-
 		// Load pre config router
         // Loop through the route array looking for wild-cards
         if(!empty($this->_routes)) // array();
             $this->loadPreRouter($this->_routes);
-
-//        echo "<pre>";
-//        print_r($this->segments);
-//        echo "</pre>";
-//        exit();
 
         // -- Load current request --
         $this->_currentRequest = new Request($this->segments['_url'], array(), $this->segments['_namespace']);

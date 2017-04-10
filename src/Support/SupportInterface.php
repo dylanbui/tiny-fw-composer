@@ -35,17 +35,7 @@ abstract class SupportInterface
      */
     public static function __callStatic($method, $args)
     {
-//        if (is_null(self::$instanceRegister))
-//        {
-//            $instance = \TinyFw\Core\FrontController::getInstance();
-//            self::$instanceRegister = $instance->getRegistry();
-//        }
-//
-//        $class = static::getSupportClass();
-//        $instance = self::$instanceRegister->{$class};
-
         $class = static::getSupportClass();
-//        $instance = Registry::getInstance()->{$class};// Application::$registerInstance->{$class};
         $instance = Container::$_container[$class];
         switch (count($args))
         {

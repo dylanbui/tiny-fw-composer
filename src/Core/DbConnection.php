@@ -42,13 +42,6 @@ class DbConnection
     {
         if (!isset(self::$instances[$config_name]))
         {
-//            $config = Config::getInstance();
-//            $hostname = $config->config_values[$config_name]['db_hostname'];
-//            $db_name = $config->config_values[$config_name]['db_name'];
-//            $db_password = $config->config_values[$config_name]['db_password'];
-//            $db_username = $config->config_values[$config_name]['db_username'];
-//            $db_port = $config->config_values[$config_name]['db_port'];
-
             $configDb = ConfigSupport::get($config_name);
             $db_driver = $configDb['db_driver'];
             $db_hostname = $configDb['db_hostname'];

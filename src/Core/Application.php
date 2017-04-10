@@ -1,11 +1,4 @@
 <?php
-	// define('ENV_PRODUCTION', 'production');
-	// define('ENV_STAGING', 'staging');
-	// define('ENV_TEST', 'test');
-	// define('ENV_DEVELOPMENT', 'development');
-	// // Define application environment => 'production'; 'staging'; 'test'; 'development';
-	// defined('APPLICATION_ENV') || define('APPLICATION_ENV', 
-	// 	(getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV') : ENV_DEVELOPMENT));
 
 namespace TinyFw\Core;
 
@@ -72,17 +65,7 @@ class Application extends Container
 
         // -- Start Cookie Object --
         $this->set('oCookie', function () use ($sessionConfig) {
-//            // Cookie
-//            $oCookie = new Cookie(
-//                $sessionConfig['cookie_name'],
-//                null,
-//                0,
-//                $sessionConfig['cookie_path'],
-//                $sessionConfig['cookie_domain'],
-//                $sessionConfig['cookie_secure'],
-//                $sessionConfig['cookie_httponly']
-//                );
-//            return $oCookie;
+            // Cookie
             $oCookie = new Cookie('cookies_site');
             return $oCookie;
         });

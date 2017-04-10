@@ -86,42 +86,6 @@ class SessionDatabaseDriver extends SessionDriver implements \SessionHandlerInte
     public function __construct(&$params)
     {
         parent::__construct($params);
-
-//        $CI =& get_instance();
-//        isset($CI->db) OR $CI->load->database();
-//        $this->_db = $CI->db;
-//
-//        if ( ! $this->_db instanceof CI_DB_query_builder)
-//        {
-//            throw new Exception('Query Builder not enabled for the configured database. Aborting.');
-//        }
-//        elseif ($this->_db->pconnect)
-//        {
-//            throw new Exception('Configured database connection is persistent. Aborting.');
-//        }
-//        elseif ($this->_db->cache_on)
-//        {
-//            throw new Exception('Configured database connection has cache enabled. Aborting.');
-//        }
-//
-//        $db_driver = $this->_db->dbdriver.(empty($this->_db->subdriver) ? '' : '_'.$this->_db->subdriver);
-//        if (strpos($db_driver, 'mysql') !== FALSE)
-//        {
-//            $this->_platform = 'mysql';
-//        }
-//        elseif (in_array($db_driver, array('postgre', 'pdo_pgsql'), TRUE))
-//        {
-//            $this->_platform = 'postgre';
-//        }
-//
-//        // Note: BC work-around for the old 'sess_table_name' setting, should be removed in the future.
-//        if ( ! isset($this->_config['save_path']) && ($this->_config['save_path'] = config_item('sess_table_name')))
-//        {
-//            log_message('debug', 'SessionManager: "sess_save_path" is empty; using BC fallback to "sess_table_name".');
-//        }
-
-//        $this->_platform = $this->_config['database_platform'];
-
         $this->_db = DbConnection::getInstance();
     }
 
@@ -334,12 +298,9 @@ class SessionDatabaseDriver extends SessionDriver implements \SessionHandlerInte
         {
             $arg = $session_id.($this->_config['match_ip'] ? '_'.$_SERVER['REMOTE_ADDR'] : '');
 
-//            if ($this->_db->query("SELECT GET_LOCK('".$arg."', 300) AS ci_session_lock")->row()->ci_session_lock)
-//            if($this->_db->selectOneRow("SELECT GET_LOCK('".$arg."', 300) AS ci_session_lock"))
             $row = $this->_db->selectOneRow("SELECT GET_LOCK('".$arg."', 300) AS ci_session_lock");
             if($row['ci_session_lock'])
             {
-//                die($row['ci_session_lock']);
                 $this->_lock = $arg;
                 return TRUE;
             }
@@ -368,7 +329,6 @@ class SessionDatabaseDriver extends SessionDriver implements \SessionHandlerInte
 
         if ($this->_platform === 'mysql')
         {
-//            if ($this->_db->query("SELECT RELEASE_LOCK('".$this->_lock."') AS ci_session_lock")->row()->ci_session_lock)
             $row = $this->_db->selectOneRow("SELECT RELEASE_LOCK('".$this->_lock."') AS ci_session_lock");
             if ($row['ci_session_lock'])
             {

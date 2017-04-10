@@ -29,9 +29,6 @@ abstract class Model
      */
     private static $schemaTableData = array();
 
-//    $start = microtime(TRUE);
-//    $runtime = microtime(TRUE) - $start;
-
 	function __construct($conn = NULL)
 	{
 		if(is_null($conn))
