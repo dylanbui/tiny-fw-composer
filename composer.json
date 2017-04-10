@@ -4,7 +4,14 @@
     "description": "Small php framework. Support php 7.1",
     "keywords": ["Small", "php framework"],    
     "license": "MIT",
-    "version": "2.0.5",
+    "version": "2.1.0",
+    "authors": [
+        {
+            "name": "Dylan Bui",
+            "email": "buivantienduc@yahoo.com",
+            "role": "Developer"
+        }
+    ],    
     "require": {
       "php": ">=5.3"
     },
